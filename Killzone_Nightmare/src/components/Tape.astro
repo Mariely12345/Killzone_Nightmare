@@ -1,0 +1,31 @@
+---
+interface Props {
+  x: string;       // "left" dentro de .photos, ej. "38%"
+  y: string;       // "top" dentro de .photos, ej. "-3%"
+  w?: string;      // ancho, ej. "30%"
+  rot?: string;    // rotación, ej. "-3deg"
+  delay?: string;  // cuándo se pega (después de que cae la foto)
+}
+
+const { x, y, w = "30%", rot = "0deg", delay = "0.8s" } = Astro.props;
+---
+
+<!-- Cinta suelta: vive FUERA de las fotos, así siempre queda por encima de todas -->
+<span class="loose-tape" data-stick style={`left:${x}; top:${y}; width:${w}; --rot:${rot}; --delay:${delay};`} aria-hidden="true">
+  <img src="/images/tape/tape.png" alt="" loading="lazy" onerror="this.style.display='none'" />
+</span>
+
+<style>
+  .loose-tape {
+    position: absolute;
+    z-index: 4;
+    display: block;
+    pointer-events: none;
+  }
+  .loose-tape img {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    opacity: 0.6; /* translúcida. Si aún se ve gris/opaca, baja a 0.45 */
+  }
+</style>
