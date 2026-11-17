@@ -30,3 +30,68 @@ main { flex: 1; }
 
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
+
+/* ===== Animación "pegar en el tablón" ===== */
+[data-stick] { opacity: 0; }
+
+[data-stick].in-view {
+  animation: stick-on 0.75s cubic-bezier(0.22, 0.9, 0.3, 1) var(--delay, 0s) both;
+}
+
+@keyframes stick-on {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px) scale(1.25) rotate(calc(var(--rot, 0deg) + 10deg));
+    filter: drop-shadow(0 40px 28px rgba(0, 0, 0, 0.25));
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(0.96) rotate(calc(var(--rot, 0deg) - 1deg));
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
+  }
+  78% {
+    transform: translateY(0) scale(1.02) rotate(var(--rot, 0deg));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(var(--rot, 0deg));
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  }
+}
+
+/* El pincho y la cinta aparecen justo después de que cae el papel */
+[data-stick] .pin,
+[data-stick] .tape { opacity: 0; }
+
+[data-stick].in-view .pin {
+  animation: pin-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--delay, 0s) + 0.5s) both;
+}
+[data-stick].in-view .tape {
+  animation: tape-in 0.3s ease-out calc(var(--delay, 0s) + 0.5s) both;
+}
+
+@keyframes pin-pop {
+  0%   { opacity: 0; scale: 0; translate: 0 -14px; }
+  100% { opacity: 1; scale: 1; translate: 0 0; }
+}
+@keyframes tape-in {
+  0%   { opacity: 0; scale: 0.5 1; }
+  100% { opacity: 1; scale: 1 1; }
+}
+
+/* Sin animaciones si la persona lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  [data-stick],
+  [data-stick].in-view {
+    opacity: 1;
+    animation: none;
+    transform: rotate(var(--rot, 0deg));
+  }
+  [data-stick] .pin,
+  [data-stick] .tape,
+  [data-stick].in-view .pin,
+  [data-stick].in-view .tape {
+    opacity: 1;
+    animation: none;
+  }
+}

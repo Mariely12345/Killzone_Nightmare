@@ -1,0 +1,49 @@
+---
+interface Props {
+  color?: "red" | "blue" | "green" | "yellow" | "purple";
+  style?: string;
+}
+
+const { color = "red", style = "" } = Astro.props;
+
+const palette = {
+  red: ["#ff7a7a", "#c0182a", "#6e0a14"],
+  blue: ["#7cc0ff", "#1f5fc0", "#0d2f6e"],
+  green: ["#7dffa8", "#1f9a4a", "#0b4a22"],
+  yellow: ["#ffe97a", "#e0a812", "#7a5600"],
+  purple: ["#cfa5ff", "#7a38c9", "#3d1a66"],
+};
+const [light, mid, dark] = palette[color];
+const gradId = `pin-${color}-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<span class="pin" style={style} aria-hidden="true">
+  <svg viewBox="0 0 44 52" width="44" height="52">
+    <defs>
+      <radialGradient id={gradId} cx="35%" cy="30%" r="75%">
+        <stop offset="0%" stop-color={light} />
+        <stop offset="55%" stop-color={mid} />
+        <stop offset="100%" stop-color={dark} />
+      </radialGradient>
+    </defs>
+    <ellipse cx="27" cy="47" rx="11" ry="3.5" fill="rgba(0,0,0,0.35)" />
+    <path d="M20 30 L22 48 L24 30 Z" fill="#9aa0a6" />
+    <ellipse cx="22" cy="28" rx="13" ry="5.5" fill={dark} />
+    <rect x="14" y="14" width="16" height="15" rx="3" fill={`url(#${gradId})`} />
+    <ellipse cx="22" cy="14" rx="14" ry="7" fill={`url(#${gradId})`} />
+    <ellipse cx="17" cy="11.5" rx="4.5" ry="2" fill="rgba(255,255,255,0.55)" />
+  </svg>
+</span>
+
+<style>
+  .pin {
+    position: absolute;
+    z-index: 5;
+    width: 44px;
+    height: 52px;
+    pointer-events: none;
+    transform-origin: 50% 85%;
+    filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
+  }
+  .pin svg { display: block; }
+</style>

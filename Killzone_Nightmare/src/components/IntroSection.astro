@@ -1,0 +1,135 @@
+---
+import Pin from "./Pin.astro";
+import PaperPhoto from "./PaperPhoto.astro";
+---
+
+<section class="intro" id="juego">
+  <!-- Tarjeta de descripción -->
+  <div class="note" data-stick style="--rot:-2deg; --delay:0s;">
+    <div class="note-bg"></div>
+
+    <div class="note-body">
+      <svg class="skull" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <path d="M32 6c-12 0-21 8-21 20 0 7 3 12 8 15v9h8v-5h10v5h8v-9c5-3 8-8 8-15C53 14 44 6 32 6z" />
+        <circle cx="23" cy="28" r="5" />
+        <circle cx="41" cy="28" r="5" />
+        <path d="M32 34l-3 6h6z" />
+      </svg>
+
+      <h2>¿De qué trata?</h2>
+      <p>
+        Un juego de acción y aventura en tercera persona, donde deberás
+        sobrevivir a un mundo lleno de horrores, resolver acertijos y
+        descubrir los secretos de <span class="hl">Killzone</span>.
+      </p>
+      <a class="more" href="/historia">Conoce la Historia →</a>
+    </div>
+
+    <Pin color="red"    style="left:-12px; top:-16px; rotate:-12deg;" />
+    <Pin color="blue"   style="right:-10px; top:-16px; rotate:10deg;" />
+    <Pin color="green"  style="left:-12px; bottom:-12px; rotate:8deg;" />
+    <Pin color="yellow" style="right:-10px; bottom:-12px; rotate:-8deg;" />
+  </div>
+
+  <!-- Dos fotos -->
+  <div class="photos">
+    <PaperPhoto
+      src="/images/intro/shot-1.jpg"
+      alt="Captura de Killzone Nightmare: combate en una estación abandonada"
+      rot="3deg"
+      delay="0.3s"
+      tapes={["top"]}
+      style="top:0; right:0; width:78%;"
+    />
+    <PaperPhoto
+      src="/images/intro/shot-2.jpg"
+      alt="Captura de Killzone Nightmare: mansión en ruinas"
+      rot="-4deg"
+      delay="0.6s"
+      tapes={["tr", "bl"]}
+      style="bottom:0; left:2%; width:78%;"
+    />
+  </div>
+</section>
+
+<style>
+  .intro {
+    width: min(1200px, 94%);
+    margin: 4.5rem auto 0;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  /* ---------- Tarjeta ---------- */
+  .note { position: relative; }
+
+  .note-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      url("/images/paper/paper-card.png") center / 100% 100% no-repeat,
+      linear-gradient(135deg, #f0ddb8, #d8bb88);
+    /* Borde rasgado de respaldo. Si tu PNG ya trae bordes rasgados, borra esta línea. */
+    clip-path: polygon(
+      1% 2%, 12% 0.5%, 25% 1.5%, 40% 0%, 55% 1.2%, 70% 0%, 85% 1.5%, 99% 0.5%,
+      100% 15%, 99% 35%, 100% 55%, 99% 75%, 100% 98%, 85% 100%, 70% 98.8%,
+      55% 100%, 40% 99%, 25% 100%, 12% 98.5%, 0% 100%, 1% 75%, 0% 55%, 1% 35%, 0% 15%
+    );
+  }
+
+  .note-body {
+    position: relative;
+    z-index: 2;
+    padding: 3.2rem 3rem 2.8rem;
+  }
+
+  .skull {
+    position: absolute;
+    top: 1.6rem;
+    right: 2rem;
+    width: 64px;
+    color: rgba(110, 80, 60, 0.45);
+  }
+
+  h2 {
+    font-family: var(--font-title);
+    font-size: clamp(2rem, 3.4vw, 2.8rem);
+    color: var(--purple);
+    margin-bottom: 0.8rem;
+    max-width: 80%;
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+  .hl { color: var(--purple); font-weight: 700; }
+
+  .more {
+    display: inline-block;
+    margin-top: 1.4rem;
+    padding: 0.55rem 1.4rem;
+    font-weight: 700;
+    color: var(--purple);
+    border: 2px solid var(--purple);
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .more:hover { background: var(--purple); color: #fff; }
+
+  /* ---------- Fotos ---------- */
+  .photos {
+    position: relative;
+    aspect-ratio: 1 / 1.05;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; gap: 2.5rem; }
+    .note-body { padding: 2.6rem 1.8rem 2.2rem; }
+    h2 { max-width: 70%; }
+    .skull { width: 50px; right: 1.2rem; }
+  }
+</style>

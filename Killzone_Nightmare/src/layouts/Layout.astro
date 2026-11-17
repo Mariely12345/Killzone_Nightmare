@@ -27,6 +27,7 @@ const {
       href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+	<noscript><style>[data-stick], [data-stick] .pin, [data-stick] .tape { opacity: 1 !important; }</style></noscript>
     <title>{title}</title>
   </head>
   <body>
@@ -35,5 +36,25 @@ const {
       <slot />
     </main>
     <Footer />
+	<script>
+  const items = document.querySelectorAll<HTMLElement>("[data-stick]");
+
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+    items.forEach((el) => io.observe(el));
+  } else {
+    items.forEach((el) => el.classList.add("in-view"));
+  }
+</script>
   </body>
 </html>
