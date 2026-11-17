@@ -102,7 +102,7 @@ const isActive = (href: string) => !href.includes("#") && pathname === href;
     --paper-solid: var(--paper, #e8d3ab);
 
     position: sticky;
-    top: 0;
+    top: -2.7rem;   /* al hacer scroll, la tira se queda pegada arriba, no la parte transparente */
     z-index: 50;
 
     display: flex;
@@ -112,7 +112,7 @@ const isActive = (href: string) => !href.includes("#") && pathname === href;
 
     width: min(1200px, 96%);
     height: 160px;
-    margin: 0.5rem auto 0;
+    margin: -2.7rem auto -3.1rem;   /* quita el espacio transparente de arriba y de abajo */
     /* Deja libres las puntas del papel rasgado */
     padding: 0 4.5rem;
 
@@ -121,9 +121,13 @@ const isActive = (href: string) => !href.includes("#") && pathname === href;
     /* La sombra sigue la transparencia del PNG (bordes rotos) */
     filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5));
 
+    pointer-events: none;
+
     /* Un solo momento de movimiento: el papel cae al cargar */
     animation: header-drop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
+
+    .header > * { pointer-events: auto; }
 
   @keyframes header-drop {
     from {
