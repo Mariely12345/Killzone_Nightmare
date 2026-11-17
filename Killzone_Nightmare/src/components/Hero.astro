@@ -1,0 +1,395 @@
+---
+interface Slide {
+  image: string;
+  alt: string;
+  tagline: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+
+// Para agregar o quitar slides, solo edita este arreglo.
+// Los puntos del carrusel se generan solos.
+const slides: Slide[] = [
+  {
+    image: "/images/hero/slide-1.jpg",
+    alt: "Aiko mirando por encima del hombro frente a una ciudad en ruinas",
+    tagline: "Sobrevive. Encuentra. Escapa.",
+    primary: { label: "Jugar Ahora", href: "/descargar" },
+    secondary: { label: "Ver Tráiler", href: "/galeria#trailer" },
+  },
+  {
+    image: "/images/hero/slide-2.jpg",
+    alt: "Ciudad abandonada bajo un cielo morado",
+    tagline: "Explora un mundo oscuro.",
+    primary: { label: "Historia", href: "/historia" },
+    secondary: { label: "Ver Galería", href: "/galeria" },
+  },
+  {
+    image: "/images/hero/slide-3.jpg",
+    alt: "Combate contra criaturas en las calles de Killzone",
+    tagline: "Descubre la verdad detrás de la señal.",
+    primary: { label: "Jugabilidad", href: "/jugabilidad" },
+    secondary: { label: "Ver Tráiler", href: "/galeria#trailer" },
+  },
+];
+---
+
+<section
+  class="hero"
+  aria-roledescription="carrusel"
+  aria-label="Destacados de Killzone Nightmare"
+>
+  <div class="frame">
+    <div class="slides">
+      {
+        slides.map((s, i) => (
+          <article
+            class:list={["slide", { active: i === 0 }]}
+            aria-roledescription="diapositiva"
+            aria-label={`${i + 1} de ${slides.length}`}
+            aria-hidden={i === 0 ? "false" : "true"}
+          >
+            <img
+              class="slide-bg"
+              src={s.image}
+              alt={s.alt}
+              loading={i === 0 ? "eager" : "lazy"}
+              onerror="this.style.display='none'"
+            />
+            <div class="slide-shade" />
+
+            <div class="slide-content">
+              <img
+                class="slide-logo"
+                src="/images/logo2.png"
+                alt="Killzone Nightmare"
+                onerror="this.style.display='none'"
+              />
+              <p class="tagline">{s.tagline}</p>
+
+              <div class="actions">
+               <!-- <a
+                  href={s.primary.href}
+                  class="btn btn-primary"
+                  tabindex={i === 0 ? 0 : -1}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                    <path d="M7 5l11 7-11 7z" />
+                  </svg>
+                  {s.primary.label}
+                </a> -->
+                {s.secondary && (
+                  <a
+                    href={s.secondary.href}
+                    class="btn btn-paper"
+                    tabindex={i === 0 ? 0 : -1}
+                  >
+                    {s.secondary.label}
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Si tienes un marco PNG con centro transparente, descomenta: -->
+    <!-- <img class="frame-overlay" src="/images/hero/hero-frame.png" alt="" aria-hidden="true" /> -->
+
+    <button class="arrow prev" aria-label="Diapositiva anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3l-9 9 9 9" />
+      </svg>
+    </button>
+    <button class="arrow next" aria-label="Diapositiva siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 3l9 9-9 9" />
+      </svg>
+    </button>
+
+    <div class="dots" role="tablist" aria-label="Seleccionar diapositiva">
+      {
+        slides.map((_, i) => (
+          <button
+            class:list={["dot", { active: i === 0 }]}
+            role="tab"
+            aria-label={`Ir a la diapositiva ${i + 1}`}
+            aria-selected={i === 0 ? "true" : "false"}
+            data-index={i}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".hero");
+
+  if (root) {
+    const slides = Array.from(root.querySelectorAll<HTMLElement>(".slide"));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>(".dot"));
+    const prev = root.querySelector<HTMLButtonElement>(".prev");
+    const next = root.querySelector<HTMLButtonElement>(".next");
+    const INTERVAL = 6000;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let index = 0;
+    let timer: number | undefined;
+
+    function goTo(n: number) {
+      index = (n + slides.length) % slides.length;
+
+      slides.forEach((slide, i) => {
+        const isActive = i === index;
+        slide.classList.toggle("active", isActive);
+        slide.setAttribute("aria-hidden", String(!isActive));
+        slide.querySelectorAll<HTMLAnchorElement>("a").forEach((a) => {
+          a.tabIndex = isActive ? 0 : -1;
+        });
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === index);
+        dot.setAttribute("aria-selected", String(i === index));
+      });
+    }
+
+    function start() {
+      if (reduceMotion || slides.length < 2) return;
+      stop();
+      timer = window.setInterval(() => goTo(index + 1), INTERVAL);
+    }
+
+    function stop() {
+      if (timer) window.clearInterval(timer);
+    }
+
+    prev?.addEventListener("click", () => { goTo(index - 1); start(); });
+    next?.addEventListener("click", () => { goTo(index + 1); start(); });
+    dots.forEach((dot) =>
+      dot.addEventListener("click", () => {
+        goTo(Number(dot.dataset.index));
+        start();
+      })
+    );
+
+    // Pausar con el mouse o al enfocar con teclado
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+
+    // Flechas del teclado
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { goTo(index - 1); start(); }
+      if (e.key === "ArrowRight") { goTo(index + 1); start(); }
+    });
+
+    // Deslizar en pantallas táctiles
+    let startX = 0;
+    root.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+    root.addEventListener("touchend", (e) => {
+      const diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) {
+        goTo(diff > 0 ? index - 1 : index + 1);
+        start();
+      }
+    });
+
+    start();
+  }
+</script>
+
+<style>
+  .hero {
+    width: min(1200px, 96%);
+    margin: 1.2rem auto 0;
+    /* drop-shadow en vez de box-shadow, porque el clip-path recortaría la sombra */
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55));
+  }
+
+  .frame {
+    position: relative;
+    aspect-ratio: 3 / 1;
+    min-height: 340px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 75% 30%, #5b2a96 0%, #2a1245 45%, #120622 100%);
+    /* Bordes de papel rasgado. Si usas hero-frame.png, borra esta línea. */
+    clip-path: polygon(
+      0% 4%, 2% 1%, 5% 3%, 9% 0%, 14% 2%, 20% 0.5%, 27% 3%, 34% 1%, 41% 2.5%,
+      48% 0%, 55% 2%, 62% 0.5%, 70% 3%, 78% 1%, 85% 2.5%, 92% 0.5%, 96% 2%, 100% 0%,
+      100% 96%, 97% 99%, 92% 97%, 86% 100%, 79% 98%, 71% 99.5%, 63% 97%, 55% 100%,
+      47% 98%, 39% 99.5%, 30% 97.5%, 22% 100%, 14% 98%, 7% 99.5%, 0% 97%
+    );
+  }
+
+  .frame-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: 100% 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* ---------- Slides ---------- */
+  .slides, .slide { position: absolute; inset: 0; }
+
+  .slide {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  .slide.active { opacity: 1; visibility: visible; }
+
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+  }
+
+  /* Oscurece la izquierda para que el texto se lea bien */
+  .slide-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(14, 5, 28, 0.85) 0%, rgba(14, 5, 28, 0.35) 45%, transparent 70%);
+  }
+
+  .slide-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    max-width: 48%;
+    padding: 0 3rem 0 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .slide-logo {
+    width: min(100%, 440px);
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  }
+
+  .tagline {
+    position: relative;
+    font-family: var(--font-title);
+    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+    color: #f3e4c0;
+    padding-bottom: 0.4rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  }
+  .tagline::after {
+    content: "";
+    position: absolute;
+    left: 15%;
+    bottom: 0;
+    width: 55%;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--purple-light);
+  }
+
+  /* ---------- Botones ---------- */
+  .actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.6rem; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.7rem;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: transform 0.2s, filter 0.2s;
+  }
+  .btn:hover { transform: translateY(-3px) rotate(-0.5deg); filter: brightness(1.1); }
+  .btn svg { width: 18px; height: 18px; }
+
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, #7a38c9, #5424a0);
+    border: 2px solid #a468ee;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-paper {
+    color: var(--ink);
+    background: var(--paper);
+    border: 2px solid var(--paper-dark);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ---------- Flechas ---------- */
+  .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    width: 48px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: none;
+    color: var(--purple-light);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .arrow svg { width: 36px; height: 36px; }
+  .arrow:hover { color: #fff; }
+  .prev { left: 1.2rem; }
+  .next { right: 1.2rem; }
+  .prev:hover { transform: translateY(-50%) translateX(-3px); }
+  .next:hover { transform: translateY(-50%) translateX(3px); }
+
+  /* ---------- Puntos (rombos) ---------- */
+  .dots {
+    position: absolute;
+    bottom: 1.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    display: flex;
+    gap: 0.9rem;
+  }
+  .dot {
+    width: 14px;
+    height: 14px;
+    rotate: 45deg;
+    background: transparent;
+    border: 2px solid var(--purple-light);
+    cursor: pointer;
+    transition: background 0.2s, scale 0.2s;
+  }
+  .dot:hover { scale: 1.2; }
+  .dot.active { background: var(--purple); border-color: #d9b8ff; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .frame { aspect-ratio: auto; min-height: 480px; }
+    .slide-shade { background: linear-gradient(to top, rgba(14, 5, 28, 0.9) 10%, rgba(14, 5, 28, 0.3) 70%); }
+    .slide-content {
+      max-width: 100%;
+      padding: 0 2.5rem 4rem;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: center;
+    }
+    .slide-logo { width: min(80%, 320px); }
+    .tagline::after { left: 22%; width: 56%; }
+    .actions { justify-content: center; }
+    .arrow { display: none; }
+  }
+</style>
