@@ -9,12 +9,13 @@ import PaperPhoto from "./PaperPhoto.astro";
     <div class="note-bg"></div>
 
     <div class="note-body">
-      <svg class="skull" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
-        <path d="M32 6c-12 0-21 8-21 20 0 7 3 12 8 15v9h8v-5h10v5h8v-9c5-3 8-8 8-15C53 14 44 6 32 6z" />
-        <circle cx="23" cy="28" r="5" />
-        <circle cx="41" cy="28" r="5" />
-        <path d="M32 34l-3 6h6z" />
-      </svg>
+      <img
+        class="skull"
+        src="/images/intro/skull.png"
+        alt=""
+        aria-hidden="true"
+        onerror="this.style.display='none'"
+      />
 
       <h2>¿De qué trata?</h2>
       <p>
@@ -25,20 +26,22 @@ import PaperPhoto from "./PaperPhoto.astro";
       <a class="more" href="/historia">Conoce la Historia →</a>
     </div>
 
-    <Pin color="red"    style="left:-12px; top:-16px; rotate:-12deg;" />
-    <Pin color="blue"   style="right:-10px; top:-16px; rotate:10deg;" />
-    <Pin color="green"  style="left:-12px; bottom:-12px; rotate:8deg;" />
-    <Pin color="yellow" style="right:-10px; bottom:-12px; rotate:-8deg;" />
+    <!-- Pines en las 4 esquinas de la tarjeta.
+         x / y = dónde cae la PUNTA, respecto a la tarjeta. -->
+    <Pin color="red"    x="7%"  y="9%"  size={92} />
+    <Pin color="blue"   x="91%" y="7%"  size={92} />
+    <Pin color="yellow" x="93%" y="92%" size={92} />
+    <Pin color="green"  x="5%"  y="94%" size={92} />
   </div>
 
-  <!-- Dos fotos -->
+  <!-- Dos fotos, sujetas con cinta -->
   <div class="photos">
     <PaperPhoto
       src="/images/intro/shot-1.jpg"
       alt="Captura de Killzone Nightmare: combate en una estación abandonada"
       rot="3deg"
       delay="0.3s"
-      tapes={["top"]}
+      tapes={["top", "bl"]}
       style="top:0; right:0; width:78%;"
     />
     <PaperPhoto
@@ -46,7 +49,7 @@ import PaperPhoto from "./PaperPhoto.astro";
       alt="Captura de Killzone Nightmare: mansión en ruinas"
       rot="-4deg"
       delay="0.6s"
-      tapes={["tr", "bl"]}
+      tapes={["tr"]}
       style="bottom:0; left:2%; width:78%;"
     />
   </div>
@@ -70,7 +73,7 @@ import PaperPhoto from "./PaperPhoto.astro";
     inset: 0;
     background:
       url("/images/paper/paper-card.png") center / 125% 125% no-repeat;
-      
+
     /* Borde rasgado de respaldo. Si tu PNG ya trae bordes rasgados, borra esta línea. */
     clip-path: polygon(
       1% 2%, 12% 0.5%, 25% 1.5%, 40% 0%, 55% 1.2%, 70% 0%, 85% 1.5%, 99% 0.5%,
@@ -87,10 +90,14 @@ import PaperPhoto from "./PaperPhoto.astro";
 
   .skull {
     position: absolute;
-    top: 1.6rem;
-    right: 2rem;
-    width: 64px;
-    color: rgba(110, 80, 60, 0.45);
+    top: 1.4rem;
+    right: 3.4rem;
+    width: clamp(64px, 8vw, 96px);
+    height: auto;
+    rotate: 5deg;
+    opacity: 0.8;
+    mix-blend-mode: multiply; /* se funde con la textura del papel */
+    pointer-events: none;
   }
 
   h2 {
@@ -130,6 +137,6 @@ import PaperPhoto from "./PaperPhoto.astro";
     .intro { grid-template-columns: 1fr; gap: 2.5rem; }
     .note-body { padding: 2.6rem 1.8rem 2.2rem; }
     h2 { max-width: 70%; }
-    .skull { width: 50px; right: 1.2rem; }
+    .skull { width: 50px; right: 2.4rem; }
   }
 </style>

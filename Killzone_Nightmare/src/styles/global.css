@@ -71,7 +71,8 @@ img { max-width: 100%; display: block; }
 }
 
 @keyframes pin-pop {
-  0%   { opacity: 0; scale: 0; translate: 0 -14px; }
+  0%   { opacity: 0; scale: 1.8; translate: 0 -22px; }
+  60%  { opacity: 1; scale: 0.92; translate: 0 2px; }
   100% { opacity: 1; scale: 1; translate: 0 0; }
 }
 @keyframes tape-in {

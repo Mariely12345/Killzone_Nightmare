@@ -1,49 +1,63 @@
 ---
 interface Props {
-  color?: "red" | "blue" | "green" | "yellow" | "purple";
-  style?: string;
+  color?: "red" | "blue" | "green" | "yellow";
+  size?: number;  // ancho en px (en móvil se reduce solo)
+  x?: string;     // dónde cae la PUNTA, horizontal: "5%"
+  y?: string;     // dónde cae la PUNTA, vertical: "8%"
+  rot?: string;
 }
 
-const { color = "red", style = "" } = Astro.props;
+const { color = "red", size = 92, x = "0%", y = "0%", rot = "0deg" } = Astro.props;
 
-const palette = {
-  red: ["#ff7a7a", "#c0182a", "#6e0a14"],
-  blue: ["#7cc0ff", "#1f5fc0", "#0d2f6e"],
-  green: ["#7dffa8", "#1f9a4a", "#0b4a22"],
-  yellow: ["#ffe97a", "#e0a812", "#7a5600"],
-  purple: ["#cfa5ff", "#7a38c9", "#3d1a66"],
+// Posición de la PUNTA dentro de cada PNG (en píxeles del archivo original).
+// Solo importan las proporciones. Si una punta no cae justo donde quieres,
+// ajusta tipX / tipY de ese color.
+const pins = {
+  red:    { w: 1280, tipX: 900, tipY: 1060 },
+  blue:   { w: 1220, tipX: 420, tipY: 1090 },
+  green:  { w: 1220, tipX: 935, tipY: 1100 },
+  yellow: { w: 1220, tipX: 400, tipY: 1090 },
 };
-const [light, mid, dark] = palette[color];
-const gradId = `pin-${color}-${Math.random().toString(36).slice(2, 8)}`;
+
+const p = pins[color];
+const fx = (p.tipX / p.w).toFixed(3);
+const fy = (p.tipY / p.w).toFixed(3);
 ---
 
-<span class="pin" style={style} aria-hidden="true">
-  <svg viewBox="0 0 44 52" width="44" height="52">
-    <defs>
-      <radialGradient id={gradId} cx="35%" cy="30%" r="75%">
-        <stop offset="0%" stop-color={light} />
-        <stop offset="55%" stop-color={mid} />
-        <stop offset="100%" stop-color={dark} />
-      </radialGradient>
-    </defs>
-    <ellipse cx="27" cy="47" rx="11" ry="3.5" fill="rgba(0,0,0,0.35)" />
-    <path d="M20 30 L22 48 L24 30 Z" fill="#9aa0a6" />
-    <ellipse cx="22" cy="28" rx="13" ry="5.5" fill={dark} />
-    <rect x="14" y="14" width="16" height="15" rx="3" fill={`url(#${gradId})`} />
-    <ellipse cx="22" cy="14" rx="14" ry="7" fill={`url(#${gradId})`} />
-    <ellipse cx="17" cy="11.5" rx="4.5" ry="2" fill="rgba(255,255,255,0.55)" />
-  </svg>
+<span
+  class="pin"
+  style={`left:${x}; top:${y}; rotate:${rot}; --s:${size}px;`}
+  aria-hidden="true"
+>
+  <img
+    src={`/images/pins/pin-${color}.png`}
+    alt=""
+    loading="lazy"
+    style={`left:calc(var(--size) * -${fx}); top:calc(var(--size) * -${fy});`}
+    onerror="this.style.display='none'"
+  />
 </span>
 
 <style>
+  /* El span mide 0×0 y es el "ancla": la punta del pincho queda exactamente aquí */
   .pin {
+    --size: var(--s);
     position: absolute;
     z-index: 5;
-    width: 44px;
-    height: 52px;
+    width: 0;
+    height: 0;
     pointer-events: none;
-    transform-origin: 50% 85%;
-    filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
   }
-  .pin svg { display: block; }
+
+  .pin img {
+    position: absolute;
+    width: var(--size);
+    height: auto;
+    max-width: none; /* importante: el contenedor mide 0, sin esto la imagen se aplasta */
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.45));
+  }
+
+  @media (max-width: 700px) {
+    .pin { --size: calc(var(--s) * 0.7); }
+  }
 </style>
