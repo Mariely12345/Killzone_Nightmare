@@ -1,0 +1,473 @@
+---
+import Pin from "./Pin.astro";
+import PaperNote from "./PaperNote.astro";
+
+interface Character {
+  id: string;          // sin espacios ni acentos (se usa en la URL: /personajes#phantom)
+  name: string;
+  avatar: string;      // imagen redonda del selector
+  art: string;         // cuerpo completo (PNG transparente)
+  bg?: string;         // fondo propio de este personaje (opcional)
+  description: string;
+  skills: string;
+}
+
+// ===== Edita aquí =====
+const intro =
+  "Conoce a quienes intentan sobrevivir en Killzone Nightmare. Elige un personaje para ver su historia y sus habilidades.";
+
+// Fondo morado compartido del panel derecho
+const defaultScene = "/images/personajes/escena.jpg";
+
+const characters: Character[] = [
+  {
+    id: "phantom",
+    name: "Phantom",
+    avatar: "/images/personajes/phantom-avatar.png",
+    art: "/images/personajes/phantom-full.png",
+    description: "Texto de ejemplo: escribe aquí la historia de Phantom.",
+    skills: "Personaje sigiloso, creativo y asustadizo",
+  },
+  {
+    id: "drake-latino",
+    name: "Drake Latino",
+    avatar: "/images/personajes/drake-latino-avatar.png",
+    art: "/images/personajes/drake-latino-full.png",
+    description: "Texto de ejemplo: escribe aquí la historia de Drake Latino.",
+    skills: "Escribe aquí sus habilidades",
+  },
+  {
+    id: "saraha",
+    name: "Saraha",
+    avatar: "/images/personajes/saraha-avatar.png",
+    art: "/images/personajes/saraha-full.png",
+    description: "Texto de ejemplo: escribe aquí la historia de Saraha.",
+    skills: "Escribe aquí sus habilidades",
+  },
+  {
+    id: "manzano",
+    name: "Manzano",
+    avatar: "/images/personajes/manzano-avatar.png",
+    art: "/images/personajes/manzano-full.png",
+    description: "Texto de ejemplo: escribe aquí la historia de Manzano.",
+    skills: "Escribe aquí sus habilidades",
+  },
+];
+---
+
+<section class="chars" aria-labelledby="chars-title">
+  <!-- Título -->
+  <div class="a-title">
+    <PaperNote rot="-1.5deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h1 id="chars-title">Personajes</h1>
+      <Fragment slot="pins">
+        <Pin color="red" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <!-- Introducción -->
+  <div class="a-intro">
+    <PaperNote rot="0.8deg" delay="0.2s" pad="1.4rem 2.4rem 1.5rem 3.2rem">
+      <p class="intro">{intro}</p>
+      <Fragment slot="pins">
+        <Pin color="green" x="5%" y="22%" size={64} />
+        <Pin color="blue" x="95%" y="14%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <!-- Selector de personajes -->
+  <div class="a-picker" role="tablist" aria-label="Elegir personaje">
+    {
+      characters.map((c, i) => (
+        <button
+          class:list={["pick", { active: i === 0 }]}
+          role="tab"
+          id={`tab-${c.id}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-controls={`panel-${c.id}`}
+          tabindex={i === 0 ? 0 : -1}
+          data-id={c.id}
+          data-stick
+          style={`--rot:${i % 2 ? 1.5 : -1.5}deg; --delay:${0.4 + i * 0.12}s;`}
+        >
+          <span class="ring">
+            <span class="ring-in">
+              <img src={c.avatar} alt="" loading="lazy" onerror="this.style.display='none'" />
+            </span>
+          </span>
+          <span class="label">{c.name}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <!-- Ficha del personaje -->
+  <div class="a-detail">
+    <PaperNote rot="0.6deg" delay="0.6s" pad="1.5rem 2.6rem 1.7rem 3.6rem">
+      <div class="detail-stack">
+        {
+          characters.map((c, i) => (
+            <article
+              class:list={["detail", { active: i === 0 }]}
+              role="tabpanel"
+              id={`panel-${c.id}`}
+              aria-labelledby={`tab-${c.id}`}
+              data-id={c.id}
+            >
+              <h2>{c.name}</h2>
+              <p class="desc">{c.description}</p>
+              <p class="skills">
+                <span class="diamond" aria-hidden="true"></span>
+                <strong>Habilidades:</strong> {c.skills}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+      <Fragment slot="pins">
+        <Pin color="red" x="6%" y="10%" size={64} />
+        <Pin color="yellow" x="94%" y="94%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <!-- Arte grande -->
+  <div class="a-art" data-stick style="--rot:1deg; --delay:0.3s;">
+    <div class="art-frame">
+      {
+        characters.map((c, i) => (
+          <figure class:list={["art", { active: i === 0 }]} data-id={c.id}>
+            <img
+              class="art-bg"
+              src={c.bg ?? defaultScene}
+              alt=""
+              loading={i === 0 ? "eager" : "lazy"}
+              onerror="this.style.display='none'"
+            />
+            <img
+              class="art-char"
+              src={c.art}
+              alt={`Ilustración de ${c.name}`}
+              loading={i === 0 ? "eager" : "lazy"}
+              onerror="this.style.display='none'"
+            />
+          </figure>
+        ))
+      }
+    </div>
+    <!-- Si tienes un marco PNG rasgado con centro transparente, descomenta y borra el clip-path de .art-frame:
+    <img class="art-overlay" src="/images/personajes/panel-frame.png" alt="" aria-hidden="true" /> -->
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".chars");
+
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>(".pick"));
+    const details = Array.from(root.querySelectorAll<HTMLElement>(".detail"));
+    const arts = Array.from(root.querySelectorAll<HTMLElement>(".art"));
+
+    function select(id: string, focus = false) {
+      tabs.forEach((t) => {
+        const on = t.dataset.id === id;
+        t.classList.toggle("active", on);
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      details.forEach((d) => d.classList.toggle("active", d.dataset.id === id));
+      arts.forEach((a) => a.classList.toggle("active", a.dataset.id === id));
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => {
+        select(tab.dataset.id!);
+        history.replaceState(null, "", `#${tab.dataset.id}`);
+      });
+
+      // Flechas del teclado
+      tab.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        const step = e.key === "ArrowRight" ? 1 : -1;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        select(next.dataset.id!, true);
+      });
+    });
+
+    // Abrir un personaje desde la URL: /personajes#saraha
+    const fromHash = () => {
+      const id = location.hash.slice(1);
+      if (tabs.some((t) => t.dataset.id === id)) select(id);
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+  }
+</script>
+
+<style>
+  .chars {
+    width: min(1300px, 94%);
+    margin: 1.5rem auto 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "title  art"
+      "intro  art"
+      "picker art"
+      "detail art";
+    column-gap: 2.6rem;
+    row-gap: 1.8rem;
+  }
+
+  .a-title  { grid-area: title; width: min(100%, 560px); }
+  .a-intro  { grid-area: intro; }
+  .a-picker { grid-area: picker; }
+  .a-detail { grid-area: detail; }
+  .a-art    { grid-area: art; }
+
+  /* ---------- Título e introducción ---------- */
+  h1 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+
+  .intro {
+    font-size: clamp(0.95rem, 1.25vw, 1.1rem);
+    line-height: 1.65;
+  }
+
+  /* ---------- Selector ---------- */
+  .a-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+    align-items: start;
+    padding-inline: 0.5rem;
+  }
+
+  .pick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    transition: translate 0.2s;
+  }
+  .pick:hover { translate: 0 -4px; }
+  .pick:focus-visible {
+    outline: 2px solid var(--purple-light);
+    outline-offset: 6px;
+    border-radius: 12px;
+  }
+
+  .ring {
+    display: block;
+    width: clamp(76px, 9.5vw, 132px);
+    aspect-ratio: 1;
+    padding: 6px;
+    border-radius: 50%;
+    background: conic-gradient(from 20deg, #7b5a2c, #e6c987, #8a6a37, #f0d9a0, #7b5a2c);
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.25s, scale 0.25s;
+  }
+  .ring-in {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 35%, #5a4636, #2b1f17 75%);
+  }
+  .ring-in img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* Personaje seleccionado: aro morado con brillo */
+  .pick.active .ring {
+    scale: 1.06;
+    background: conic-gradient(from 20deg, #6b2fb3, #d9b8ff, #7a38c9, #e9d3ff, #6b2fb3);
+    box-shadow:
+      inset 0 0 0 2px rgba(0, 0, 0, 0.4),
+      0 0 0 3px rgba(181, 123, 255, 0.6),
+      0 0 24px 6px rgba(181, 123, 255, 0.65);
+  }
+
+  .label {
+    position: relative;
+    z-index: 2;
+    display: block;
+    margin-top: -1rem;
+    padding: 0.35rem 1.2rem;
+    font-weight: 700;
+    font-size: clamp(0.85rem, 1.25vw, 1.15rem);
+    color: var(--ink);
+    background: url("/images/paper/paper-card.png") center / 160% 260% no-repeat, #e4cf9f;
+    clip-path: polygon(0 8%, 12% 0, 40% 6%, 70% 0, 100% 7%, 98% 55%, 100% 94%, 72% 100%, 40% 94%, 14% 100%, 0 92%, 2% 50%);
+    transition: color 0.2s;
+  }
+  .pick.active .label { color: var(--purple); }
+
+  /* ---------- Ficha ---------- */
+  /* Todas las fichas ocupan la misma celda: la caja siempre mide lo de la más larga y no salta al cambiar */
+  .detail-stack { display: grid; }
+
+  .detail {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s, visibility 0.35s;
+  }
+  .detail.active { opacity: 1; visibility: visible; }
+
+  .detail h2 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.8rem;
+    font-family: var(--font-body);
+    font-variant: small-caps;
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    color: var(--purple-dark);
+  }
+  .detail h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 115%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple-dark), transparent);
+  }
+
+  .desc {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
+  }
+
+  .skills {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 2px solid rgba(42, 18, 69, 0.65);
+    font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+  }
+  .diamond {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+    background: var(--purple);
+    border: 2px solid var(--purple-dark);
+  }
+
+  /* ---------- Arte grande ---------- */
+  .a-art {
+    align-self: stretch;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55));
+  }
+
+  .art-frame {
+    position: relative;
+    height: 100%;
+    min-height: 560px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 30%, #5b2a96 0%, #2a1245 55%, #0e0618 100%);
+    /* Bordes rasgados. Si usas panel-frame.png, borra este clip-path. */
+    clip-path: polygon(
+      3% 1.5%, 10% 0%, 18% 1.2%, 27% 0%, 38% 1.4%, 50% 0.2%, 62% 1.5%, 73% 0%, 84% 1.3%, 93% 0.2%, 100% 1.8%,
+      99% 12%, 100% 25%, 98.8% 38%, 100% 52%, 99% 66%, 100% 80%, 99% 92%,
+      100% 98.5%, 90% 100%, 79% 98.6%, 67% 100%, 55% 98.7%, 43% 100%, 31% 98.8%, 19% 100%, 8% 98.7%, 0% 100%,
+      1.2% 88%, 0% 74%, 1% 60%, 0% 46%, 1.3% 32%, 0% 18%, 1% 8%
+    );
+  }
+
+  .art-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .art {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s, visibility 0.45s;
+  }
+  .art.active { opacity: 1; visibility: visible; }
+
+  .art-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .art-char {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    height: 94%;
+    width: auto;
+    max-width: 96%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.6));
+  }
+  .art.active .art-char {
+    animation: art-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @keyframes art-in {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .chars {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto;
+      grid-template-areas:
+        "title"
+        "intro"
+        "art"
+        "picker"
+        "detail";
+      row-gap: 1.6rem;
+    }
+    .a-art { align-self: auto; }
+    .art-frame { height: auto; min-height: 0; aspect-ratio: 4 / 5; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .detail, .art, .ring, .label { transition: none; }
+    .art.active .art-char { animation: none; }
+  }
+</style>

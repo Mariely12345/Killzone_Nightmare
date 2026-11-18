@@ -1,0 +1,41 @@
+---
+interface Props {
+  rot?: string;
+  delay?: string;
+  pad?: string; // padding interno del contenido
+}
+
+const { rot = "0deg", delay = "0s", pad = "1.6rem 2rem" } = Astro.props;
+---
+
+<div class="paper" data-stick style={`--rot:${rot}; --delay:${delay}; --pad:${pad};`}>
+  <div class="paper-bg"></div>
+  <div class="paper-body">
+    <slot />
+  </div>
+  <!-- Los pinchos van fuera del fondo para que el clip-path no los recorte -->
+  <slot name="pins" />
+</div>
+
+<style>
+  .paper { position: relative; }
+
+  .paper-bg {
+    position: absolute;
+    inset: 0;
+    background: url("/images/paper/paper-card.png") center / 125% 125% no-repeat;
+
+    /* Borde rasgado de respaldo. Si tu PNG ya trae bordes rasgados, borra esta línea. */
+    clip-path: polygon(
+      1% 2%, 12% 0.5%, 25% 1.5%, 40% 0%, 55% 1.2%, 70% 0%, 85% 1.5%, 99% 0.5%,
+      100% 15%, 99% 35%, 100% 55%, 99% 75%, 100% 98%, 85% 100%, 70% 98.8%,
+      55% 100%, 40% 99%, 25% 100%, 12% 98.5%, 0% 100%, 1% 75%, 0% 55%, 1% 35%, 0% 15%
+    );
+  }
+
+  .paper-body {
+    position: relative;
+    z-index: 2;
+    padding: var(--pad);
+  }
+</style>
