@@ -9,12 +9,12 @@ interface Character {
   art: string;         // cuerpo completo (PNG transparente)
   bg?: string;         // fondo propio de este personaje (opcional)
   description: string;
-  skills: string;
+  //skills: string;
 }
 
 // ===== Edita aquí =====
 const intro =
-  "Conoce a quienes intentan sobrevivir en Killzone Nightmare. Elige un personaje para ver su historia y sus habilidades.";
+  "Conoce a quienes intentan sobrevivir en Killzone Nightmare. Elige un personaje para ver su historia.";
 
 // Fondo morado compartido del panel derecho
 const defaultScene = "/images/personajes/escena.jpg";
@@ -26,7 +26,7 @@ const characters: Character[] = [
     avatar: "/images/personajes/phantom-avatar.png",
     art: "/images/personajes/phantom-full.png",
     description: "Texto de ejemplo: escribe aquí la historia de Phantom.",
-    skills: "Personaje sigiloso, creativo y asustadizo",
+    //skills: "Personaje sigiloso, creativo y asustadizo",
   },
   {
     id: "drake-latino",
@@ -34,7 +34,7 @@ const characters: Character[] = [
     avatar: "/images/personajes/drake-latino-avatar.png",
     art: "/images/personajes/drake-latino-full.png",
     description: "Texto de ejemplo: escribe aquí la historia de Drake Latino.",
-    skills: "Escribe aquí sus habilidades",
+    //skills: "Escribe aquí sus habilidades",
   },
   {
     id: "saraha",
@@ -42,7 +42,7 @@ const characters: Character[] = [
     avatar: "/images/personajes/saraha-avatar.png",
     art: "/images/personajes/saraha-full.png",
     description: "Texto de ejemplo: escribe aquí la historia de Saraha.",
-    skills: "Escribe aquí sus habilidades",
+    //skills: "Escribe aquí sus habilidades",
   },
   {
     id: "manzano",
@@ -50,7 +50,7 @@ const characters: Character[] = [
     avatar: "/images/personajes/manzano-avatar.png",
     art: "/images/personajes/manzano-full.png",
     description: "Texto de ejemplo: escribe aquí la historia de Manzano.",
-    skills: "Escribe aquí sus habilidades",
+    //skills: "Escribe aquí sus habilidades",
   },
 ];
 ---
@@ -118,10 +118,10 @@ const characters: Character[] = [
             >
               <h2>{c.name}</h2>
               <p class="desc">{c.description}</p>
-              <p class="skills">
+            <!--  <p class="skills">
                 <span class="diamond" aria-hidden="true"></span>
                 <strong>Habilidades:</strong> {c.skills}
-              </p>
+              </p> -->
             </article>
           ))
         }
@@ -363,7 +363,7 @@ const characters: Character[] = [
     line-height: 1.6;
   }
 
-  .skills {
+  /* .skills {
     display: flex;
     align-items: baseline;
     gap: 0.6rem;
@@ -371,7 +371,7 @@ const characters: Character[] = [
     padding-top: 0.9rem;
     border-top: 2px solid rgba(42, 18, 69, 0.65);
     font-size: clamp(0.95rem, 1.35vw, 1.1rem);
-  }
+  } */
   .diamond {
     flex-shrink: 0;
     width: 12px;
