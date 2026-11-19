@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import MusicToggle from "../components/MusicToggle.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -36,6 +37,7 @@ const {
       <slot />
     </main>
     <Footer />
+    <MusicToggle />
 	<script>
   const items = document.querySelectorAll<HTMLElement>("[data-stick]");
 

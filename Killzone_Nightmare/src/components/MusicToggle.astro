@@ -1,0 +1,108 @@
+---
+const src = "/audio/musica.mpeg"; // ===== Edita aquí =====
+---
+
+<audio id="bg-music" src={src} loop preload="auto"></audio>
+
+<button
+  type="button"
+  id="music-toggle"
+  class="music-toggle"
+  aria-label="Silenciar música"
+  aria-pressed="false"
+  title="Silenciar música"
+>
+  <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9z" />
+    <path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" />
+  </svg>
+  <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9z" />
+    <path d="M17 9l5 6M22 9l-5 6" />
+  </svg>
+</button>
+
+<script>
+  const audio = document.getElementById("bg-music") as HTMLAudioElement | null;
+  const btn = document.getElementById("music-toggle") as HTMLButtonElement | null;
+
+  if (audio && btn) {
+    audio.volume = 0.35;
+
+    // Recuerda si la persona la silenció
+    const KEY = "music-muted";
+    let muted = false;
+    try { muted = localStorage.getItem(KEY) === "1"; } catch {}
+
+    function render() {
+      btn!.classList.toggle("muted", muted);
+      btn!.setAttribute("aria-pressed", String(muted));
+      const label = muted ? "Activar música" : "Silenciar música";
+      btn!.setAttribute("aria-label", label);
+      btn!.title = label;
+    }
+
+    function start() {
+      if (muted) return;
+      audio!.play().then(removeUnlock).catch(() => {});
+    }
+
+    // Si el navegador bloquea el autoplay, arranca en la primera interacción
+    const unlockEvents = ["pointerdown", "keydown", "touchstart"] as const;
+    function removeUnlock() {
+      unlockEvents.forEach((e) => window.removeEventListener(e, start));
+    }
+    unlockEvents.forEach((e) => window.addEventListener(e, start, { once: false }));
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      muted = !muted;
+      try { localStorage.setItem(KEY, muted ? "1" : "0"); } catch {}
+      if (muted) {
+        audio.pause();
+      } else {
+        audio.play().catch(() => {});
+      }
+      render();
+    });
+
+    render();
+    start(); // intento inmediato (funciona si el navegador lo permite)
+  }
+</script>
+
+<style>
+  .music-toggle {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--purple-light);
+    background: rgba(20, 8, 36, 0.85);
+    color: #efe2ff;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: background 0.2s, scale 0.2s;
+  }
+  .music-toggle:hover { background: rgba(107, 47, 179, 0.9); scale: 1.08; }
+  .music-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  .music-toggle svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .music-toggle .icon-off { display: none; }
+  .music-toggle.muted .icon-on { display: none; }
+  .music-toggle.muted .icon-off { display: block; }
+</style>
