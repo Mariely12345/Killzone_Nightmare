@@ -1,0 +1,170 @@
+---
+import PaperNote from "./PaperNote.astro";
+import Pin from "./Pin.astro";
+import Tape from "./Tape.astro";
+
+// ===== Edita aquí =====
+// Opción A: video en tu proyecto (public/videos/trailer.mp4)
+const videoSrc = "/videos/trailer.mp4";
+// Opción B: YouTube. Si pones el ID (lo que va después de "v=" en el enlace), se usa en lugar del mp4
+const youtubeId = "";
+
+const poster = "/images/historia/trailer-poster.jpg"; // imagen que se ve antes de darle play
+const caption = "Tráiler oficial";
+---
+
+<section class="trailer" id="trailer" aria-labelledby="trailer-title">
+  <div class="head">
+    <PaperNote rot="1.2deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h2 id="trailer-title">Tráiler</h2>
+      <Fragment slot="pins">
+        <Pin color="yellow" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <figure class="viewer" data-stick style="--rot:0.8deg; --delay:0.2s;">
+    <div class="frame">
+      <div class="screen" data-youtube={youtubeId} data-video={videoSrc}>
+        <img
+          class="poster"
+          src={poster}
+          alt="Portada del tráiler de Killzone Nightmare"
+          loading="lazy"
+          onerror="this.style.display='none'"
+        />
+        <button type="button" class="play" aria-label="Reproducir tráiler">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>
+        </button>
+      </div>
+      <figcaption class="caption">{caption}</figcaption>
+    </div>
+    <Tape x="-4%" y="-4%" w="18%" rot="-38deg" delay="0.8s" />
+    <Tape x="86%" y="-3%" w="18%" rot="38deg" delay="1s" />
+  </figure>
+</section>
+
+<script>
+  const screen = document.querySelector<HTMLElement>(".trailer .screen");
+  const btn = screen?.querySelector<HTMLButtonElement>(".play");
+
+  if (screen && btn) {
+    btn.addEventListener("click", () => {
+      const yt = screen.dataset.youtube;
+      const src = screen.dataset.video;
+
+      if (yt) {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0`;
+        iframe.title = "Tráiler de Killzone Nightmare";
+        iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        iframe.allowFullscreen = true;
+        screen.append(iframe);
+      } else if (src) {
+        const video = document.createElement("video");
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        screen.append(video);
+      }
+
+      screen.classList.add("playing");
+    });
+  }
+</script>
+
+<style>
+  .trailer {
+    width: min(1300px, 94%);
+    margin: 0 auto;
+  }
+  .head { width: min(100%, 520px); margin-bottom: 2.4rem; }
+
+  h2 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2rem, 4.6vw, 3.8rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+
+  .viewer {
+    position: relative;
+    isolation: isolate;
+    width: min(100%, 1000px);
+    margin: 0 auto;
+  }
+  .frame {
+    padding: 0.9rem 0.9rem 0.6rem;
+    background: url("/images/paper/paper-card.png") center / 140% 140% no-repeat, #e8e5de;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  }
+
+  .screen {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 70% 30%, #4a2380, #1a0b2e 70%);
+  }
+  .poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Viñeta oscura sobre el póster */
+  .screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(8, 2, 18, 0.65) 100%);
+  }
+  .screen :global(iframe),
+  .screen :global(video) {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #000;
+  }
+  .screen.playing::after,
+  .screen.playing .poster,
+  .screen.playing .play { display: none; }
+
+  .play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: clamp(64px, 9vw, 96px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid var(--purple-light);
+    background: rgba(20, 8, 36, 0.65);
+    color: #e5ccff;
+    cursor: pointer;
+    transition: background 0.2s, scale 0.2s;
+  }
+  .play:hover { background: rgba(107, 47, 179, 0.9); scale: 1.08; }
+  .play:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+  .play svg { width: 42%; height: 42%; fill: currentColor; margin-left: 6%; }
+
+  .caption {
+    padding: 0.5rem 0 0.2rem;
+    text-align: center;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: var(--purple-dark);
+  }
+</style>
