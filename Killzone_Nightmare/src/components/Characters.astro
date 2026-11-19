@@ -71,8 +71,8 @@ const characters: Character[] = [
     <PaperNote rot="0.8deg" delay="0.2s" pad="1.4rem 2.4rem 1.5rem 3.2rem">
       <p class="intro">{intro}</p>
       <Fragment slot="pins">
-        <Pin color="green" x="5%" y="22%" size={64} />
-        <Pin color="blue" x="95%" y="14%" size={64} />
+        <Pin color="green" x="5%" y="25%" size={64} />
+        <Pin color="blue" x="95%" y="27%" size={64} />
       </Fragment>
     </PaperNote>
   </div>
@@ -432,14 +432,15 @@ const characters: Character[] = [
   .art-char {
     position: absolute;
     left: 50%;
-    bottom: 0;
+    bottom: var(--shift, 0%);
     translate: -50% 0;
-    height: 94%;
+    height: var(--zoom, 100%);
     width: auto;
-    max-width: 96%;
+    max-width: none;
     object-fit: contain;
     filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.6));
   }
+
   .art.active .art-char {
     animation: art-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }

@@ -65,6 +65,15 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 <section class="play-section" aria-labelledby="play-title" id="jugabilidad">
 
+  <div class="play-head">
+    <PaperNote rot="-1.5deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h1 id="play-title">{heading}</h1>
+      <Fragment slot="pins">
+        <Pin color="green" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
   <div class="stage">
     <!-- ================= Visor a la izquierda ================= -->
     <div class="viewer-wrap" style="--rot:-1deg; --delay:0.2s;">
@@ -110,7 +119,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
       <Tape x="-6%" y="-2%" w="24%" rot="-38deg" delay="0.8s" />
       <Tape x="82%" y="0%" w="24%" rot="38deg" delay="1s" />
       <Tape x="-6%" y="84%" w="22%" rot="40deg" delay="1.2s" />
-      <Pin color="yellow" x="93%" y="6%" size={80} />
     </div>
 
     <!-- ================= Columna derecha ================= -->
@@ -121,8 +129,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
         <p class="lead">{intro}</p>
 
         <Fragment slot="pins">
-          <Pin color="red" x="8%" y="8%" size={80} />
-          <Pin color="blue" x="93%" y="6%" size={80} />
+          <Pin color="red" x="8%" y="14%" size={80} />
+          <Pin color="blue" x="90%" y="16%" size={80} />
         </Fragment>
       </PaperNote>
 
@@ -255,46 +263,21 @@ const pad = (n: number) => String(n).padStart(2, "0");
     width: min(1320px, 95%);
     margin: 3rem auto 0;
   }
-
-  /* ---------- Título grande ---------- */
+  /* ---------- Título en papelito ---------- */
   .play-head {
-    text-align: center;
+    width: min(100%, 600px);
     margin-bottom: 2.2rem;
   }
   h1 {
-    font-family: var(--font-title);
+    font-family: var(--font-body);
     font-weight: 700;
-    font-size: clamp(2.6rem, 7vw, 6rem);
-    line-height: 1;
-    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--cream);
-    text-shadow: 0 3px 0 #3b1b08, 0 10px 22px rgba(0, 0, 0, 0.55);
+    letter-spacing: 0.02em;
+    font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+    line-height: 1;
+    color: #1d1209;
   }
-  .head-ornament {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    max-width: 520px;
-    margin: 0.8rem auto 0;
-  }
-  .head-ornament::before,
-  .head-ornament::after {
-    content: "";
-    flex: 1;
-    height: 3px;
-    border-block: 1px solid var(--cream);
-    opacity: 0.8;
-    background: transparent;
-  }
-  .head-ornament span {
-    width: 12px;
-    height: 12px;
-    rotate: 45deg;
-    background: var(--cream);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  }
+
 
   /* ---------- Escenario: visor + columna ---------- */
   .stage {
