@@ -14,13 +14,31 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
+/*
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--cork);
+  background-image: url("/images/cork-bg.png"); 
+  background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}*/
 
 body {
   font-family: var(--font-body);
   color: var(--ink);
   background-color: var(--cork);
-  /* Cuando tengas la textura de corcho, descomenta: */
-  background-image: url("/images/cork-bg.png"); 
+  background-image:
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0) 40%,
+      rgba(0, 0, 0, 0.55) 100%
+    ),
+    url("/images/cork-bg-2.png");
+  background-attachment: fixed, scroll;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
