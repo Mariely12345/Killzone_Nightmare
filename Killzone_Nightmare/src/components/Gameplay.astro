@@ -7,18 +7,20 @@ type IconName = "target" | "puzzle" | "run" | "search";
 
 interface Slide {
   icon: IconName;
-  title: string;   // aparece en la lista
-  text: string;    // aparece debajo de la lista cuando el slide está activo
+  title: string;   // aparece en la tarjeta oscura
+  text: string;    // descripción del slide activo
   image: string;
   alt: string;
   video?: string;  // opcional: muestra el botón de play
 }
 
 // ===== Edita aquí =====
+const heading = "Jugabilidad";
+const panelTitle = "Cómo se juega";
 const intro =
   "Killzone Nightmare es un juego de terror y supervivencia donde deberás escapar de un lugar maldito lleno de peligros, resolver acertijos y enfrentar tus miedos.";
 
-// Los textos son los de tu mockup; cámbialos por las mecánicas reales de tu juego.
+// Cambia los textos por las mecánicas reales de tu juego.
 const slides: Slide[] = [
   {
     icon: "target",
@@ -61,114 +63,116 @@ const icons: Record<IconName, string> = {
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
-<section class="play-section" aria-labelledby="play-title">
-  <!-- ================= Tarjeta izquierda ================= -->
-  <PaperNote rot="-1.5deg" delay="0s" pad="3rem 3rem 2.6rem 3.6rem">
-    <h1 id="play-title">Jugabilidad</h1>
-    <div class="ornament" aria-hidden="true"><span></span></div>
+<section class="play-section" aria-labelledby="play-title" id="jugabilidad">
 
-    <p class="lead">{intro}</p>
+  <div class="stage">
+    <!-- ================= Visor a la izquierda ================= -->
+    <div class="viewer-wrap" style="--rot:-1deg; --delay:0.2s;">
+      <div class="viewer-paper"></div>
 
-    <ul class="features">
-      {
-        slides.map((s, i) => (
-          <li>
-            <button
-              type="button"
-              class:list={["feat", { active: i === 0 }]}
-              data-index={i}
-              aria-current={i === 0 ? "true" : "false"}
-            >
-              <span class="ico">
-                <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icons[s.icon]} />
-              </span>
-              <span class="feat-label">{s.title}</span>
-            </button>
-          </li>
-        ))
-      }
-    </ul>
-
-    <div class="desc-stack" aria-live="polite">
-      {
-        slides.map((s, i) => (
-          <p class:list={["desc", { active: i === 0 }]} data-index={i}>
-            <strong>{pad(i + 1)}.</strong> {s.text}
-          </p>
-        ))
-      }
-    </div>
-
-    <Fragment slot="pins">
-      <Pin color="red" x="8%" y="8%" size={80} />
-      <Pin color="blue" x="93%" y="6%" size={80} />
-      <Pin color="green" x="7%" y="95%" size={80} />
-    </Fragment>
-  </PaperNote>
-
-  <!-- ================= Carrusel derecho ================= -->
-  <div class="viewer-wrap" data-stick style="--rot:1.2deg; --delay:0.3s;">
-    <div class="viewer-paper"></div>
-
-    <div
-      class="viewer-slot"
-      role="region"
-      aria-roledescription="carrusel"
-      aria-label="Capturas de jugabilidad"
-    >
-      <div class="track" style="--i:0;">
-        {
-          slides.map((s, i) => (
-            <figure
-              class:list={["slide", { active: i === 0 }]}
-              role="group"
-              aria-roledescription="diapositiva"
-              aria-label={`${i + 1} de ${slides.length}`}
-              inert={i !== 0}
-            >
-              <img
-                src={s.image}
-                alt={s.alt}
-                loading={i === 0 ? "eager" : "lazy"}
-                onerror="this.style.display='none'"
-              />
-              {s.video && (
-                <>
+      <div
+        class="viewer-slot"
+        role="region"
+        aria-roledescription="carrusel"
+        aria-label="Capturas de jugabilidad"
+      >
+        <div class="track" style="--i:0;">
+          {
+            slides.map((s, i) => (
+              <figure
+                class:list={["slide", { active: i === 0 }]}
+                role="group"
+                aria-roledescription="diapositiva"
+                aria-label={`${i + 1} de ${slides.length}`}
+                inert={i !== 0}
+              >
+                <img
+                  src={s.image}
+                  alt={s.alt}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  onerror="this.style.display='none'"
+                />
+                {s.video && (
                   <video class="slide-video" src={s.video} poster={s.image} preload="none" playsinline controls />
+                )}
+                {s.video && (
                   <button type="button" class="play" aria-label={`Reproducir video: ${s.title}`}>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>
                   </button>
-                </>
-              )}
-            </figure>
-          ))
-        }
+                )}
+              </figure>
+            ))
+          }
+        </div>
       </div>
 
-      <button type="button" class="side prev" aria-label="Diapositiva anterior">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-      </button>
-      <button type="button" class="side next" aria-label="Diapositiva siguiente">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-      </button>
+      <!-- Cintas y pincho (x / y / w son % de esta caja) -->
+      <Tape x="-6%" y="-2%" w="24%" rot="-38deg" delay="0.8s" />
+      <Tape x="82%" y="0%" w="24%" rot="38deg" delay="1s" />
+      <Tape x="-6%" y="84%" w="22%" rot="40deg" delay="1.2s" />
+      <Pin color="yellow" x="93%" y="6%" size={80} />
     </div>
 
-    <!-- Píldora morada con el contador -->
-    <div class="pill">
-      <button type="button" class="pill-btn prev" aria-label="Diapositiva anterior">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-      </button>
-      <span class="count" aria-hidden="true"><b class="cur">01</b> / {pad(slides.length)}</span>
-      <button type="button" class="pill-btn next" aria-label="Diapositiva siguiente">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-      </button>
-    </div>
+    <!-- ================= Columna derecha ================= -->
+    <aside class="side-col">
+      <!-- Nota de papel con el texto introductorio -->
+      <PaperNote rot="1.2deg" delay="0.3s" pad="2.6rem 2.8rem 3.8rem 3rem">
+        <div class="panel-title"><h2>{panelTitle}</h2></div>
+        <p class="lead">{intro}</p>
 
-    <!-- Cintas y pincho (x / y / w son % de esta caja) -->
-    <Tape x="-8%" y="-2%" w="28%" rot="-38deg" delay="0.8s" />
-    <Tape x="80%" y="0%" w="28%" rot="38deg" delay="1s" />
-    <Tape x="-8%" y="62%" w="26%" rot="40deg" delay="1.2s" />
-    <Pin color="yellow" x="91%" y="7%" size={80} />
+        <Fragment slot="pins">
+          <Pin color="red" x="8%" y="8%" size={80} />
+          <Pin color="blue" x="93%" y="6%" size={80} />
+        </Fragment>
+      </PaperNote>
+
+      <!-- Tarjeta oscura con marco: se superpone al visor y a la nota -->
+      <div class="card-wrap">
+        <div class="card">
+          <ul class="features" aria-label="Mecánicas">
+            {
+              slides.map((s, i) => (
+                <li>
+                  <button
+                    type="button"
+                    class:list={["feat", { active: i === 0 }]}
+                    data-index={i}
+                    aria-label={s.title}
+                    title={s.title}
+                    aria-current={i === 0 ? "true" : "false"}
+                  >
+                    <span class="ico">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icons[s.icon]} />
+                    </span>
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="desc-stack" aria-live="polite">
+            {
+              slides.map((s, i) => (
+                <div class:list={["desc", { active: i === 0 }]} data-index={i}>
+                  <h3><span class="num">{pad(i + 1)}.</span> {s.title}</h3>
+                  <p>{s.text}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="controls">
+            <button type="button" class="ctrl prev" aria-label="Diapositiva anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+            </button>
+            <span class="count" aria-hidden="true"><b class="cur">01</b> / {pad(slides.length)}</span>
+            <button type="button" class="ctrl next" aria-label="Diapositiva siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -245,129 +249,68 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 <style>
   .play-section {
-    width: min(1250px, 94%);
+    --cream: #f6e7c8;
+    --lav: #d9b8ff;
+
+    width: min(1320px, 95%);
     margin: 3rem auto 0;
-    display: grid;
-    grid-template-columns: 1fr 1.08fr;
-    gap: 3rem;
-    align-items: center;
   }
 
-  /* ---------- Tarjeta ---------- */
+  /* ---------- Título grande ---------- */
+  .play-head {
+    text-align: center;
+    margin-bottom: 2.2rem;
+  }
   h1 {
     font-family: var(--font-title);
     font-weight: 700;
-    font-size: clamp(3rem, 6vw, 5rem);
-    line-height: 0.95;
-    color: var(--purple);
+    font-size: clamp(2.6rem, 7vw, 6rem);
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-shadow: 0 3px 0 #3b1b08, 0 10px 22px rgba(0, 0, 0, 0.55);
   }
-
-  .ornament {
+  .head-ornament {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.8rem;
-    max-width: 420px;
-    margin: 0.5rem 0 1.2rem;
+    max-width: 520px;
+    margin: 0.8rem auto 0;
   }
-  .ornament::before,
-  .ornament::after {
+  .head-ornament::before,
+  .head-ornament::after {
     content: "";
     flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--purple) 45%);
+    height: 3px;
+    border-block: 1px solid var(--cream);
+    opacity: 0.8;
+    background: transparent;
   }
-  .ornament::after { transform: scaleX(-1); }
-  .ornament span {
-    width: 10px;
-    height: 10px;
+  .head-ornament span {
+    width: 12px;
+    height: 12px;
     rotate: 45deg;
-    background: var(--purple);
+    background: var(--cream);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   }
 
-  .lead {
-    font-size: clamp(0.95rem, 1.25vw, 1.1rem);
-    line-height: 1.65;
-    margin-bottom: 1.3rem;
-  }
-
-  .features {
-    list-style: none;
+  /* ---------- Escenario: visor + columna ---------- */
+  .stage {
     display: grid;
-    gap: 0.55rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .feat {
-    display: flex;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 2rem;
     align-items: center;
-    gap: 1rem;
-    width: 100%;
-    padding: 0.2rem 0.3rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    font: inherit;
-    color: inherit;
-    transition: translate 0.2s;
-  }
-  .feat:hover { translate: 4px 0; }
-  .feat:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; border-radius: 6px; }
-
-  .ico {
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 6px;
-    color: #e5ccff;
-    background: linear-gradient(135deg, #4a1d86, #2a1245);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(181, 123, 255, 0.35);
-    transition: background 0.25s, box-shadow 0.25s;
-  }
-  .ico svg {
-    width: 26px;
-    height: 26px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 
-  .feat-label {
-    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
-    transition: color 0.2s;
-  }
-
-  .feat.active .ico {
-    background: linear-gradient(135deg, #8b45e0, #5424a0);
-    box-shadow: 0 0 0 2px #d9b8ff, 0 0 14px rgba(181, 123, 255, 0.7);
-  }
-  .feat.active .feat-label { color: var(--purple); font-weight: 700; }
-
-  /* Todas las descripciones ocupan la misma celda: la tarjeta no salta de alto al cambiar */
-  .desc-stack { display: grid; }
-  .desc {
-    grid-area: 1 / 1;
-    padding-left: 1rem;
-    border-left: 3px solid var(--purple);
-    font-size: 1rem;
-    line-height: 1.6;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s, visibility 0.35s;
-  }
-  .desc.active { opacity: 1; visibility: visible; }
-  .desc strong { color: var(--purple); }
-
-  /* ---------- Carrusel ---------- */
+  /* ---------- Visor ---------- */
   .viewer-wrap {
     position: relative;
     isolation: isolate;
     width: 100%;
-    aspect-ratio: 4 / 3.35;
+    aspect-ratio: 4 / 3.1;
+    rotate: var(--rot, 0deg);
   }
 
   .viewer-paper {
@@ -378,7 +321,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
   .viewer-slot {
     position: absolute;
-    inset: 6.5% 6% 17% 6%;
+    inset: 7% 6% 9% 6%;
     overflow: hidden;
     background: radial-gradient(ellipse at 70% 30%, #4a2380, #1a0b2e 70%);
     /* Borde superior e inferior rasgados */
@@ -386,6 +329,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
       0% 3%, 8% 0%, 16% 2.5%, 27% 0.5%, 38% 3%, 50% 1%, 62% 3.5%, 74% 0.5%, 86% 3%, 100% 1%,
       100% 97%, 88% 100%, 76% 96.5%, 63% 99.5%, 50% 96%, 37% 99%, 24% 96.5%, 12% 100%, 0% 97%
     );
+  }
+  /* Viñeta oscura, como en la referencia */
+  .viewer-slot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at center, transparent 55%, rgba(8, 2, 18, 0.65) 100%),
+      linear-gradient(to top, rgba(8, 2, 18, 0.55), transparent 35%);
   }
 
   .track {
@@ -410,6 +364,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
   .slide-video {
     position: absolute;
     inset: 0;
+    z-index: 4;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -422,96 +377,205 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
   .play {
     position: absolute;
-    left: 4%;
-    bottom: 7%;
+    left: 5%;
+    bottom: 8%;
+    z-index: 5;
     display: grid;
     place-items: center;
-    width: 54px;
-    height: 54px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    border: 3px solid #d9b8ff;
+    border: 3px solid var(--lav);
     background: rgba(20, 8, 36, 0.55);
     color: #e5ccff;
     cursor: pointer;
     transition: background 0.2s, scale 0.2s;
   }
   .play:hover { background: rgba(107, 47, 179, 0.85); scale: 1.08; }
-  .play svg { width: 22px; height: 22px; fill: currentColor; margin-left: 3px; }
+  .play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .play svg { width: 26px; height: 26px; fill: currentColor; margin-left: 4px; }
 
-  /* Flechas sobre la foto */
-  .side {
+  /* ---------- Columna derecha ---------- */
+  .side-col {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Título entre doble línea (como "El combate") */
+  .panel-title {
+    margin: 0 0 1.1rem;
+    padding: 0.55rem 0;
+    text-align: center;
+    border-block: 4px double var(--purple);
+  }
+  .panel-title h2 {
+    margin: 0;
+    font-family: var(--font-title);
+    font-weight: 600;
+    font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+    color: var(--purple);
+  }
+  .lead {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+    line-height: 1.7;
+  }
+
+  /* ---------- Tarjeta oscura con marco ---------- */
+  .card-wrap {
+    position: relative;
+    z-index: 5;
+    /* Se mete sobre el visor y sobre la nota de papel */
+    margin: -2.4rem 0 0 -5rem;
+    filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55));
+  }
+  .card {
+    position: relative;
+    padding: 1.6rem 1.8rem 1.3rem;
+    color: #efe2ff;
+    background: linear-gradient(160deg, #1f0e38 0%, #0d0618 100%);
+    /* Esquinas cortadas */
+    clip-path: polygon(
+      16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px),
+      calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px
+    );
+  }
+  /* Marco fino interior */
+  .card::before {
+    content: "";
     position: absolute;
-    top: 50%;
-    translate: 0 -50%;
-    z-index: 4;
+    inset: 8px;
+    border: 1px solid rgba(217, 184, 255, 0.55);
+    clip-path: polygon(
+      12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px),
+      calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px
+    );
+    pointer-events: none;
+  }
+
+  .features {
+    list-style: none;
+    margin: 0 0 1.1rem;
+    padding: 0;
+    display: flex;
+    gap: 0.7rem;
+  }
+
+  .feat {
+    display: block;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: translate 0.2s;
+  }
+  .feat:hover { translate: 0 -2px; }
+  .feat:focus-visible { outline: 2px solid var(--lav); outline-offset: 3px; border-radius: 6px; }
+
+  .ico {
     display: grid;
     place-items: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    border: 2px solid rgba(217, 184, 255, 0.8);
-    background: rgba(20, 8, 36, 0.55);
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
     color: #e5ccff;
+    background: linear-gradient(135deg, #4a1d86, #2a1245);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(181, 123, 255, 0.35);
+    transition: background 0.25s, box-shadow 0.25s;
+  }
+  .ico svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .feat.active .ico {
+    background: linear-gradient(135deg, #8b45e0, #5424a0);
+    box-shadow: 0 0 0 2px var(--lav), 0 0 14px rgba(181, 123, 255, 0.7);
+  }
+
+  /* Todas las descripciones ocupan la misma celda: la tarjeta no cambia de alto */
+  .desc-stack { display: grid; }
+  .desc {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s, visibility 0.35s;
+  }
+  .desc.active { opacity: 1; visibility: visible; }
+  .desc h3 {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-title);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+    line-height: 1.2;
+    color: var(--cream);
+  }
+  .desc .num { color: var(--lav); }
+  .desc p {
+    margin: 0;
+    font-size: clamp(0.92rem, 1.1vw, 1.02rem);
+    line-height: 1.7;
+    opacity: 0.92;
+  }
+
+  /* Controles: flechas circulares + contador */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    margin-top: 1.1rem;
+  }
+  .ctrl {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--lav);
+    background: none;
+    color: #efe2ff;
     cursor: pointer;
     transition: background 0.2s, scale 0.2s;
   }
-  .side:hover { background: rgba(107, 47, 179, 0.85); scale: 1.08; }
-  .side.prev { left: 3%; }
-  .side.next { right: 3%; }
-  .side svg,
-  .pill-btn svg {
-    width: 22px;
-    height: 22px;
+  .ctrl:hover { background: rgba(181, 123, 255, 0.28); scale: 1.08; }
+  .ctrl:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .ctrl svg {
+    width: 20px;
+    height: 20px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2.4;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-
-  /* Píldora con el contador: cruza el borde inferior de la foto */
-  .pill {
-    position: absolute;
-    left: 50%;
-    bottom: calc(17% - 1.6rem);
-    translate: -50% 0;
-    z-index: 6;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    padding: 0.75rem 1.9rem;
-    color: #f3e8ff;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    background: linear-gradient(135deg, #7a38c9, #4a1d86);
-    /* Si tienes un PNG morado rasgado para la píldora, reemplaza la línea de arriba por:
-       background: url("/images/jugabilidad/pill.png") center / 100% 100% no-repeat; y borra el clip-path. */
-    clip-path: polygon(
-      0 10%, 6% 0, 20% 8%, 36% 0, 52% 7%, 68% 0, 84% 8%, 94% 0, 100% 12%,
-      98% 50%, 100% 90%, 90% 100%, 76% 92%, 60% 100%, 44% 93%, 28% 100%, 12% 92%, 3% 100%, 0 88%, 2% 50%
-    );
+  .count {
+    min-width: 4.6rem;
+    text-align: center;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
   }
-  .pill-btn {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid rgba(233, 211, 255, 0.85);
-    background: none;
-    color: inherit;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .pill-btn:hover { background: rgba(255, 255, 255, 0.18); }
-  .count { min-width: 4.4rem; text-align: center; }
+  .count b { font-weight: 600; color: var(--cream); }
 
   /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .card-wrap { margin-left: -3rem; }
+  }
+
   @media (max-width: 900px) {
-    .play-section { grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
-    .viewer-wrap { max-width: 640px; margin-inline: auto; }
-    .side { width: 38px; height: 38px; }
-    .pill { gap: 0.8rem; padding: 0.6rem 1.3rem; }
+    .stage { grid-template-columns: minmax(0, 1fr); gap: 1.6rem; }
+    .viewer-wrap { max-width: 680px; margin-inline: auto; }
+    .card-wrap {
+      width: min(560px, 94%);
+      margin: -1rem auto 0;
+    }
+    .controls { gap: 1.2rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
