@@ -1,0 +1,278 @@
+---
+import PaperNote from "./PaperNote.astro";
+import Pin from "./Pin.astro";
+import Tape from "./Tape.astro";
+
+// ===== Edita aquí =====
+const intro =
+  "El escenario principal es un depósito de vehículos abandonados, rodeado de cercas metálicas y estructuras deterioradas. La niebla, la oscuridad y las apariciones fantasmales hacen que sea un lugar peligroso, donde ambos equipos deberán luchar por recuperar la bandera contraria y conseguir el control del territorio.";
+
+const maps = [
+  { src: "/images/historia/mapa-01.jpeg", label: "Vista general", alt: "Vista general del depósito de vehículos abandonados" },
+  { src: "/images/historia/mapa-02.jpeg", label: "Mapa 2", alt: "Segunda vista del mapa de Killzone Nightmare" },
+  { src: "/images/historia/mapa-03.jpeg", label: "Mapa 3", alt: "Tercera vista del mapa de Killzone Nightmare" },
+];
+
+const places = [
+  { name: "Autos oxidados", text: "Sirven como cobertura durante los combates." },
+  { name: "Avión estrellado", text: "Uno de los mayores misterios del lugar." },
+  { name: "Barricadas", text: "Crean zonas de combate entre los equipos." },
+  { name: "Calabaza gigante", text: "Aporta el ambiente de Halloween." },
+];
+
+const rots = [-1.2, 1.4, 1, -1.5];
+const thumbRots = [-2, 1.2, -1];
+---
+
+<section class="map" id="mapa" aria-labelledby="map-title">
+  <div class="head">
+    <PaperNote rot="-1deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h2 id="map-title">Mapa</h2>
+      <Fragment slot="pins">
+        <Pin color="green" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <!-- Visor grande + miniaturas -->
+  <div class="gallery">
+    <figure class="viewer" data-stick style="--rot:-0.8deg; --delay:0.2s;">
+      <div class="frame">
+        <div class="screen" aria-live="polite">
+          {
+            maps.map((m, i) => (
+              <img
+                class:list={["shot", { active: i === 0 }]}
+                src={m.src}
+                alt={m.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                data-index={i}
+                onerror="this.style.display='none'"
+              />
+            ))
+          }
+        </div>
+        <figcaption class="caption">{maps[0].label}</figcaption>
+      </div>
+      <Tape x="-4%" y="-4%" w="18%" rot="-38deg" delay="0.8s" />
+      <Tape x="86%" y="-3%" w="18%" rot="38deg" delay="1s" />
+    </figure>
+
+    <div class="thumbs" role="group" aria-label="Elegir mapa">
+      {
+        maps.map((m, i) => (
+          <button
+            type="button"
+            class:list={["thumb", { active: i === 0 }]}
+            data-index={i}
+            data-label={m.label}
+            aria-label={m.label}
+            aria-pressed={i === 0 ? "true" : "false"}
+            data-stick
+            style={`--rot:${thumbRots[i]}deg; --delay:${0.4 + i * 0.12}s;`}
+          >
+            <span class="thumb-img">
+              <img src={m.src} alt="" loading="lazy" onerror="this.style.display='none'" />
+            </span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Texto + lugares -->
+  <div class="info">
+    <PaperNote rot="0.8deg" delay="0.3s" pad="2rem 2.4rem 2.2rem 2.8rem">
+      <p class="intro">{intro}</p>
+      <Fragment slot="pins">
+        <Pin color="red" x="7%" y="10%" size={68} />
+        <Pin color="blue" x="93%" y="12%" size={68} />
+      </Fragment>
+    </PaperNote>
+
+    <ul class="places">
+      {
+        places.map((p, i) => (
+          <li data-stick style={`--rot:${rots[i]}deg; --delay:${0.3 + i * 0.12}s;`}>
+            <strong><span class="diamond" aria-hidden="true"></span>{p.name}</strong>
+            <span>{p.text}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".map");
+
+  if (root) {
+    const shots = Array.from(root.querySelectorAll<HTMLElement>(".shot"));
+    const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>(".thumb"));
+    const caption = root.querySelector<HTMLElement>(".caption");
+
+    function select(i: number) {
+      shots.forEach((s, n) => s.classList.toggle("active", n === i));
+      thumbs.forEach((t, n) => {
+        t.classList.toggle("active", n === i);
+        t.setAttribute("aria-pressed", String(n === i));
+      });
+      if (caption) caption.textContent = thumbs[i].dataset.label ?? "";
+    }
+
+    thumbs.forEach((t, i) => t.addEventListener("click", () => select(i)));
+  }
+</script>
+
+<style>
+  .map {
+    width: min(1300px, 94%);
+    margin: 0 auto;
+  }
+  .head { width: min(100%, 520px); margin-bottom: 2.4rem; }
+
+  h2 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2rem, 4.6vw, 3.8rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+
+  /* ---------- Visor + miniaturas ---------- */
+  .gallery {
+    width: min(100%, 1000px);
+    margin: 0 auto 2.6rem;
+  }
+
+  .viewer {
+    position: relative;
+    isolation: isolate;
+    margin: 0;
+  }
+  .frame {
+    padding: 0.9rem 0.9rem 0.6rem;
+    background: url("/images/paper/paper-card.png") center / 140% 140% no-repeat, #e8e5de;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  }
+
+  /* Todas las imágenes en la misma celda, se funden al cambiar */
+  .screen {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 70% 30%, #4a2380, #1a0b2e 70%);
+  }
+  .shot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.45s;
+  }
+  .shot.active { opacity: 1; }
+
+  .caption {
+    padding: 0.5rem 0 0.2rem;
+    text-align: center;
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: var(--purple-dark);
+  }
+
+  .thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.8rem, 2vw, 1.6rem);
+    margin: 1.8rem auto 0;
+    width: min(100%, 720px);
+  }
+  .thumb {
+    padding: 0.4rem 0.4rem 0.6rem;
+    border: none;
+    cursor: pointer;
+    background: url("/images/paper/paper-card.png") center / 140% 140% no-repeat, #e4cf9f;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+    transition: translate 0.2s, outline-color 0.2s;
+    outline: 3px solid transparent;
+    outline-offset: 3px;
+  }
+  .thumb:hover { translate: 0 -4px; }
+  .thumb:focus-visible { outline-color: #fff; }
+  .thumb.active {
+    outline-color: var(--purple-light);
+    box-shadow: 0 0 18px 4px rgba(181, 123, 255, 0.55);
+  }
+  .thumb-img {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 70% 30%, #4a2380, #1a0b2e 70%);
+  }
+  .thumb-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------- Texto y lugares ---------- */
+  .info {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 2.4rem;
+    align-items: start;
+  }
+  .intro {
+    font-size: clamp(0.98rem, 1.2vw, 1.08rem);
+    line-height: 1.7;
+  }
+
+  .places {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .places li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 1rem 1rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--ink);
+    background: url("/images/paper/paper-card.png") center / 140% 140% no-repeat, #e4cf9f;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  }
+  .places strong {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--purple-dark);
+  }
+  .diamond {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    rotate: 45deg;
+    background: var(--purple);
+    border: 2px solid var(--purple-dark);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .info { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .places { grid-template-columns: minmax(0, 1fr); }
+    .thumbs { gap: 0.6rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shot, .thumb { transition: none; }
+  }
+</style>

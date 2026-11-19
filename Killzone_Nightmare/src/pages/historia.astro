@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import StorySection from "../components/StorySection.astro";
+import CharacterCards from "../components/CharacterCards.astro";
+import MapSection from "../components/MapSection.astro";
+---
+
+<Layout title="Killzone Nightmare | Historia">
+  <div class="page">
+    <StorySection />
+    <CharacterCards />
+    <MapSection />
+  </div>
+</Layout>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 8vw, 6rem);
+    padding-block: 1.5rem 3rem;
+  }
+</style>

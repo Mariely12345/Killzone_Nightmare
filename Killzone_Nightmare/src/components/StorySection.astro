@@ -1,0 +1,102 @@
+---
+import PaperNote from "./PaperNote.astro";
+import Pin from "./Pin.astro";
+import PaperPhoto from "./PaperPhoto.astro";
+import Tape from "./Tape.astro";
+
+// ===== Edita aquí =====
+const paragraphs = [
+//  "Killzone Nightmare se desarrolla en un misterioso depósito de vehículos abandonados que parece estar atrapado entre la realidad y una dimensión de pesadilla. Todo comenzó después de un extraño accidente que dejó un avión estrellado en el lugar y provocó la aparición de criaturas fantasmales.",
+//  "Los personajes quedaron atrapados en este territorio, donde dos equipos deben enfrentarse para controlar la zona. Su objetivo es infiltrarse en la base enemiga, robar su bandera y regresar con ella a su propio territorio.",
+//  "Sin embargo, detrás de estos enfrentamientos existe un misterio relacionado con el origen del lugar y las fuerzas sobrenaturales que lo habitan.",
+    "Killzone Nightmare se desarrolla en un misterioso depósito de vehículos abandonados, atrapado entre la realidad y una dimensión de pesadilla. Todo comenzó tras un accidente aéreo que provocó la aparición de criaturas fantasmales.",
+    "Dos equipos quedaron atrapados en este lugar y deben enfrentarse para controlar la zona, infiltrándose en la base enemiga para robar su bandera y llevarla de regreso a su territorio.",
+    "Pero detrás de estos enfrentamientos se esconde un misterio sobre el origen del lugar y las fuerzas sobrenaturales que lo habitan."
+];
+---
+
+<section class="story" id="historia" aria-labelledby="story-title">
+  <div class="a-title">
+    <PaperNote rot="-1.5deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h1 id="story-title">Historia</h1>
+      <Fragment slot="pins">
+        <Pin color="red" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <div class="a-text">
+    <PaperNote rot="0.8deg" delay="0.2s" pad="2.2rem 2.8rem 2.4rem 3.2rem">
+      {paragraphs.map((p) => <p>{p}</p>)}
+      <Fragment slot="pins">
+        <Pin color="green" x="6%" y="8%" size={72} />
+        <Pin color="blue" x="94%" y="10%" size={72} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <div class="a-photos">
+    <PaperPhoto
+      src="/images/historia/historia-1.jpg"
+      alt="El depósito de vehículos abandonados de Killzone Nightmare"
+      rot="3deg"
+      delay="0.3s"
+      style="top:0; right:0; width:80%;"
+    />
+    <PaperPhoto
+      src="/images/historia/historia-2.jpg"
+      alt="El avión estrellado entre la niebla"
+      rot="-4deg"
+      delay="0.6s"
+      style="bottom:0; left:0; width:80%;"
+    />
+    <Tape x="50%" y="-3%" w="32%" rot="5deg" delay="0.6s" />
+    <Tape x="-8%" y="46%" w="32%" rot="-30deg" delay="0.9s" />
+  </div>
+</section>
+
+<style>
+  .story {
+    width: min(1200px, 94%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    grid-template-areas:
+      "title  photos"
+      "text   photos";
+    column-gap: 3rem;
+    row-gap: 1.8rem;
+    align-items: start;
+  }
+  .a-title  { grid-area: title; width: min(100%, 520px); }
+  .a-text   { grid-area: text; }
+  .a-photos {
+    grid-area: photos;
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: 1 / 1.1;
+  }
+
+  h1 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+  p {
+    font-size: clamp(1rem, 1.3vw, 1.12rem);
+    line-height: 1.75;
+  }
+  p + p { margin-top: 1rem; }
+
+  @media (max-width: 900px) {
+    .story {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "title" "text" "photos";
+    }
+    .a-photos { max-width: 520px; width: 100%; margin-inline: auto; }
+  }
+</style>

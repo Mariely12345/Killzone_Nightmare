@@ -1,0 +1,148 @@
+---
+import PaperNote from "./PaperNote.astro";
+import Pin from "./Pin.astro";
+
+interface Char {
+  name: string;
+  role: string;
+  avatar: string;
+  text: string;
+}
+
+// ===== Edita aquí =====
+const characters: Char[] = [
+  {
+    name: "Phantom",
+    role: "El misterio",
+    avatar: "/images/personajes/phantom-avatar.png",
+    text: "Personaje misterioso relacionado con los fenómenos sobrenaturales del depósito, cuya presencia genera incertidumbre entre los demás.",
+  },
+  {
+    name: "Drake Latino",
+    role: "El valiente",
+    avatar: "/images/personajes/drake-latino-avatar.png",
+    text: "Superviviente decidido y valiente que busca enfrentarse a cualquier amenaza para salir de la pesadilla.",
+  },
+  {
+    name: "Manzano",
+    role: "El peculiar",
+    avatar: "/images/personajes/manzano-avatar.png",
+    text: "Personaje peculiar que destaca por su apariencia y personalidad, aunque su origen sigue siendo un misterio.",
+  },
+  {
+    name: "Saraha",
+    role: "La exploradora",
+    avatar: "/images/personajes/saraha-avatar.png",
+    text: "Joven exploradora inteligente y ágil que conoce los peligros del territorio y sabe aprovecharlos a su favor.",
+  },
+];
+
+const rots = [-1.6, 1.2, 1.5, -1.2];
+const pins = ["red", "green", "blue", "yellow"] as const;
+---
+
+<section class="chars" id="personajes" aria-labelledby="chars-title">
+  <div class="head">
+    <PaperNote rot="1.2deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h2 id="chars-title">Personajes</h2>
+      <Fragment slot="pins">
+        <Pin color="blue" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <ul class="grid">
+    {
+      characters.map((c, i) => (
+        <li class="card" data-stick style={`--rot:${rots[i]}deg; --delay:${i * 0.12}s;`}>
+          <div class="paper">
+            <span class="ring">
+              <span class="ring-in">
+                <img src={c.avatar} alt="" loading="lazy" onerror="this.style.display='none'" />
+              </span>
+            </span>
+            <h3>{c.name}</h3>
+            <p class="role">{c.role}</p>
+            <p class="txt">{c.text}</p>
+          </div>
+          <Pin color={pins[i]} x="50%" y="2%" size={60} />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .chars {
+    width: min(1300px, 94%);
+    margin: 0 auto;
+  }
+  .head { width: min(100%, 560px); margin-bottom: 2.4rem; }
+
+  h2 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2rem, 4.6vw, 3.8rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2.4rem 1.8rem;
+  }
+
+  .card { position: relative; }
+  .paper {
+    height: 100%;
+    padding: 2.6rem 1.4rem 1.8rem;
+    text-align: center;
+    background: url("/images/paper/paper-card.png") center / 140% 140%  no-repeat, #e4cf9f;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  }
+
+  .ring {
+    display: block;
+    width: 110px;
+    aspect-ratio: 1;
+    margin: 0 auto 0.9rem;
+    padding: 5px;
+    border-radius: 50%;
+    background: conic-gradient(from 20deg, #6b2fb3, #d9b8ff, #7a38c9, #e9d3ff, #6b2fb3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+  }
+  .ring-in {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 35%, #5a4636, #2b1f17 75%);
+  }
+  .ring-in img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+
+  h3 {
+    font-family: var(--font-body);
+    font-variant: small-caps;
+    font-weight: 700;
+    font-size: 1.7rem;
+    line-height: 1.1;
+    color: var(--purple-dark);
+  }
+  .role {
+    margin: 0.2rem 0 0.8rem;
+    font-family: var(--font-title);
+    font-size: 1.3rem;
+    color: var(--purple);
+  }
+  .txt {
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+</style>
