@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GalleryGrid from "../components/GalleryGrid.astro";
+
+// ===== Edita aquí: agrega todas las imágenes que quieras =====
+const items = [
+  { src: "/images/galeria/img-01.jpeg", alt: "Descripción de la imagen 1" },
+  { src: "/images/galeria/img-02.jpeg", alt: "Descripción de la imagen 2" },
+  { src: "/images/galeria/img-03.jpeg", alt: "Descripción de la imagen 3 (grande)" },
+  { src: "/images/galeria/img-04.jpeg", alt: "Descripción de la imagen 4" },
+  { src: "/images/galeria/img-05.jpeg", alt: "Descripción de la imagen 5" },
+  { src: "/images/galeria/img-06.jpeg", alt: "Descripción de la imagen 6 (grande)" },
+  { src: "/images/galeria/img-07.jpeg", alt: "Descripción de la imagen 1" },
+  { src: "/images/galeria/img-08.jpeg", alt: "Descripción de la imagen 2" },
+  { src: "/images/galeria/img-09.jpeg", alt: "Descripción de la imagen 3 (grande)" },
+  { src: "/images/galeria/img-10.jpeg", alt: "Descripción de la imagen 4" },
+  { src: "/images/galeria/img-11.jpeg", alt: "Descripción de la imagen 5" },
+  { src: "/images/galeria/img-12.jpeg", alt: "Descripción de la imagen 6 (grande)" },
+  { src: "/images/galeria/img-13.jpeg", alt: "Descripción de la imagen 1" },
+  { src: "/images/galeria/img-14.jpeg", alt: "Descripción de la imagen 2" },
+  { src: "/images/galeria/img-15.jpeg", alt: "Descripción de la imagen 3 (grande)" },
+  { src: "/images/galeria/img-21.jpeg", alt: "Descripción de la imagen 4" },
+  { src: "/images/galeria/img-24.jpeg", alt: "Descripción de la imagen 5" },
+  { src: "/images/galeria/img-18.jpeg", alt: "Descripción de la imagen 6 (grande)" },
+  { src: "/images/galeria/img-19.jpeg", alt: "Descripción de la imagen 1" },
+  { src: "/images/galeria/img-20.jpeg", alt: "Descripción de la imagen 2" },
+  { src: "/images/galeria/img-16.jpeg", alt: "Descripción de la imagen 3 (grande)" },
+  { src: "/images/galeria/img-22.jpeg", alt: "Descripción de la imagen 4" },
+  { src: "/images/galeria/img-23.jpeg", alt: "Descripción de la imagen 5" },
+  { src: "/images/galeria/img-17.jpeg", alt: "Descripción de la imagen 6 (grande)" },
+];
+---
+
+<Layout title="Killzone Nightmare | Galería">
+  <GalleryGrid items={items} />
+</Layout>

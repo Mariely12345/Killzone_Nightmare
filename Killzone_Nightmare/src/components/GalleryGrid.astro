@@ -1,0 +1,223 @@
+---
+import PaperNote from "./PaperNote.astro";
+import Pin from "./Pin.astro";
+
+interface Shot {
+  src: string;
+  alt: string;
+}
+
+interface Props {
+  heading?: string;
+  items: Shot[];
+}
+
+const { heading = "Galería", items } = Astro.props;
+
+// Rotaciones que se van alternando para que se vea pegado a mano
+const rots = [-1.6, 1.3, -0.6, 1.8, -1.2, 0.8];
+---
+
+<section class="gallery" aria-labelledby="gallery-title" id="galeria">
+  <div class="g-head">
+    <PaperNote rot="-1.5deg" delay="0s" pad="1.1rem 2.6rem 1.3rem 4.2rem">
+      <h1 id="gallery-title">{heading}</h1>
+      <Fragment slot="pins">
+        <Pin color="red" x="7%" y="32%" size={64} />
+      </Fragment>
+    </PaperNote>
+  </div>
+
+  <ul class="grid">
+    {
+      items.map((it, i) => (
+        <li
+          class="shot"
+          data-stick
+          style={`--rot:${rots[i % rots.length]}deg; --delay:${(i % 3) * 0.15}s;`}
+        >
+          <button type="button" class="open" data-full={it.src} data-alt={it.alt} aria-label={`Ampliar: ${it.alt}`}>
+            <span class="photo">
+              <img src={it.src} alt={it.alt} loading={i < 3 ? "eager" : "lazy"} onerror="this.style.display='none'" />
+            </span>
+          </button>
+          <img class="strip strip-l" src="/images/tape/tape.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+          <img class="strip strip-r" src="/images/tape/tape.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        </li>
+      ))
+    }
+  </ul>
+
+  <!-- Visor ampliado -->
+  <dialog class="lightbox" aria-label="Imagen ampliada">
+    <button type="button" class="close" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
+    </button>
+    <img class="lb-img" src="" alt="" />
+  </dialog>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".gallery");
+
+  if (root) {
+    const dlg = root.querySelector<HTMLDialogElement>(".lightbox")!;
+    const img = root.querySelector<HTMLImageElement>(".lb-img")!;
+
+    root.querySelectorAll<HTMLButtonElement>(".open").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        img.src = btn.dataset.full ?? "";
+        img.alt = btn.dataset.alt ?? "";
+        dlg.showModal();
+      })
+    );
+
+    // Cerrar al hacer clic fuera de la imagen o en la X
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg || (e.target as HTMLElement).closest(".close")) dlg.close();
+    });
+    dlg.addEventListener("close", () => { img.src = ""; });
+  }
+</script>
+
+<style>
+  .gallery {
+    width: min(1300px, 94%);
+    margin: 0 auto;
+  }
+
+  /* ---------- Título ---------- */
+  .g-head {
+    width: min(100%, 560px);
+    margin-bottom: 2.4rem;
+  }
+  h1 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+    line-height: 1;
+    color: #1d1209;
+  }
+
+  /* ---------- Patrón: 2 chicas + 1 grande ---------- */
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.4rem, 3.2vw, 2.6rem);
+  }
+
+  /* Cada tercera imagen ocupa todo el ancho */
+  .shot:nth-child(3n) { grid-column: 1 / -1; }
+  /* Si sobra una sola al final, también va ancha */
+  .shot:last-child:nth-child(3n + 1) { grid-column: 1 / -1; }
+
+  .shot {
+    position: relative;
+    transition: translate 0.2s;
+  }
+  .shot:hover { translate: 0 -5px; }
+
+  .open {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+    font: inherit;
+  }
+  .open:focus-visible { outline: 2px solid var(--purple-light); outline-offset: 6px; }
+
+  .photo {
+    display: block;
+    padding: 1.8rem 1.8rem 2.2rem;
+    background: url("/images/paper/paper-card.png") center / 130% 130% no-repeat;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  }
+
+  .photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: radial-gradient(ellipse at 70% 30%, #4a2380, #1a0b2e 70%);
+  }
+  .shot:nth-child(3n) .photo img,
+  .shot:last-child:nth-child(3n + 1) .photo img {
+    aspect-ratio: 21 / 9;
+  }
+
+  /* Cintas */
+  .strip {
+    position: absolute;
+    top: -0%;
+    width: clamp(100px, 14%, 150px);
+    height: auto;
+    max-width: none;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+  .strip-l { left: -3%;  rotate: -38deg; }
+  .strip-r { right: -3%; rotate: 38deg; }
+
+  /* ---------- Visor ampliado ---------- */
+  .lightbox {
+    width: min(1100px, 94vw);
+    max-height: 92vh;
+    margin: auto;
+    padding: 0.8rem;
+    border: none;
+    background: url("/images/paper/photo-paper.png") center / cover no-repeat, #e8e5de;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    overflow: visible;
+  }
+  .lightbox::backdrop { background: rgba(8, 2, 18, 0.85); }
+  .lb-img {
+    display: block;
+    width: 100%;
+    max-height: calc(92vh - 1.6rem);
+    object-fit: contain;
+    background: #0d0618;
+  }
+  .close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--purple-light);
+    background: rgba(20, 8, 36, 0.95);
+    color: #efe2ff;
+    cursor: pointer;
+  }
+  .close:hover { background: var(--purple); }
+  .close svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 600px) {
+    /* En celular todas van a todo el ancho, una debajo de otra */
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .shot:nth-child(3n) .photo img,
+    .shot:last-child:nth-child(3n + 1) .photo img { aspect-ratio: 4 / 3; }
+    .close { top: -10px; right: -6px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shot { transition: none; }
+  }
+</style>
